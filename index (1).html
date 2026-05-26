@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream Spark X — AI Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #2a2a3a;
+    --accent: #ff6b35;
+    --accent2: #a855f7;
+    --accent3: #06b6d4;
+    --text: #f0f0f8;
+    --muted: #6b6b8a;
+    --success: #22c55e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BG Effects */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; left: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(168,85,247,0.08) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -200px; right: -200px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(255,107,53,0.07) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 1.3rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .logo span { font-weight: 400; opacity: 0.6; }
+
+  .badge {
+    font-size: 0.65rem; font-weight: 600;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; padding: 3px 8px; border-radius: 20px;
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex; gap: 4px;
+    padding: 16px 16px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    position: relative; z-index: 1;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    border-radius: 12px 12px 0 0;
+    border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem; font-weight: 500;
+    background: var(--surface);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .tab.active {
+    background: var(--card);
+    color: var(--text);
+    border-color: var(--border);
+  }
+
+  .tab-icon { font-size: 1rem; }
+
+  /* MAIN */
+  main {
+    position: relative; z-index: 1;
+    padding: 0 16px 100px;
+  }
+
+  .panel {
+    display: none;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 16px 16px 16px;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+  .panel.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem; font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .section-sub {
+    font-size: 0.78rem; color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  /* FORM ELEMENTS */
+  label {
+    display: block;
+    font-size: 0.78rem; font-weight: 500;
+    color: var(--muted); margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+
+  input[type="text"], input[type="password"], textarea, select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--accent2);
+  }
+
+  textarea { resize: vertical; min-height: 100px; }
+
+  select option { background: var(--surface); }
+
+  /* BUTTONS */
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 14px;
+    border: none; border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #e05520);
+    color: white;
+    box-shadow: 0 4px 20px rgba(255,107,53,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(255,107,53,0.4); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-purple {
+    background: linear-gradient(135deg, var(--accent2), #7c3aed);
+    color: white;
+    box-shadow: 0 4px 20px rgba(168,85,247,0.3);
+  }
+
+  .btn-cyan {
+    background: linear-gradient(135deg, var(--accent3), #0891b2);
+    color: white;
+    box-shadow: 0 4px 20px rgba(6,182,212,0.3);
+  }
+
+  .btn:disabled {
+    opacity: 0.5; cursor: not-allowed;
+    transform: none !important; box-shadow: none !important;
+  }
+
+  .btn-sm {
+    width: auto; padding: 8px 14px;
+    font-size: 0.8rem; border-radius: 8px;
+  }
+
+  /* OUTPUT BOX */
+  .output-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 16px;
+    min-height: 80px;
+    font-size: 0.88rem;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+    display: none;
+  }
+  .output-box.visible { display: block; }
+
+  .output-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .output-label {
+    font-size: 0.72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--accent);
+  }
+
+  /* AUDIO PLAYER */
+  .audio-wrap {
+    margin-top: 16px; display: none;
+  }
+  .audio-wrap.visible { display: block; }
+  audio { width: 100%; border-radius: 10px; }
+
+  /* LOADING */
+  .loading {
+    display: flex; align-items: center; gap: 10px;
+    padding: 16px; color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* CHIPS */
+  .chips {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 16px;
+  }
+  .chip {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-size: 0.78rem; color: var(--muted);
+    cursor: pointer; transition: all 0.15s;
+  }
+  .chip.selected, .chip:hover {
+    border-color: var(--accent2);
+    color: var(--accent2);
+    background: rgba(168,85,247,0.1);
+  }
+
+  /* DIVIDER */
+  .divider {
+    border: none; border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  /* API SETTINGS */
+  .api-row {
+    display: flex; gap: 8px; align-items: flex-end;
+  }
+  .api-row input { margin-bottom: 0; flex: 1; }
+
+  .eye-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    padding: 12px 14px;
+    cursor: pointer; font-size: 1rem;
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+  .eye-btn:hover { color: var(--text); }
+
+  /* STATUS DOT */
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--muted); display: inline-block;
+    margin-right: 6px;
+  }
+  .status-dot.green { background: var(--success); box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+
+  /* COPY BTN */
+  .copy-btn {
+    background: none; border: 1px solid var(--border);
+    border-radius: 6px; color: var(--muted);
+    padding: 4px 10px; font-size: 0.72rem;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--text); }
+
+  /* CHAR COUNT */
+  .char-count {
+    text-align: right; font-size: 0.72rem;
+    color: var(--muted); margin-top: -12px;
+    margin-bottom: 12px;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--success);
+    color: white; padding: 10px 20px;
+    border-radius: 20px; font-size: 0.85rem;
+    font-weight: 500; z-index: 1000;
+    transition: transform 0.3s ease;
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* SETTINGS CARD */
+  .settings-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+    margin-bottom: 16px;
+  }
+  .settings-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.9rem; font-weight: 700;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(10,10,15,0.95);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: flex; z-index: 100;
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 3px;
+    padding: 10px 4px;
+    background: none; border: none;
+    color: var(--muted); cursor: pointer;
+    font-size: 0.65rem; font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-item.active { color: var(--accent); }
+  .nav-icon { font-size: 1.3rem; }
+
+  /* CHAT */
+  .chat-messages {
+    max-height: 350px; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 12px;
+    margin-bottom: 16px; padding-right: 4px;
+    scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+  }
+
+  .msg {
+    padding: 10px 14px; border-radius: 12px;
+    font-size: 0.88rem; line-height: 1.6;
+    max-width: 90%;
+  }
+  .msg-user {
+    background: linear-gradient(135deg, rgba(255,107,53,0.2), rgba(168,85,247,0.2));
+    border: 1px solid rgba(255,107,53,0.3);
+    align-self: flex-end;
+  }
+  .msg-ai {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+  }
+
+  .chat-input-row {
+    display: flex; gap: 8px;
+  }
+  .chat-input-row input { margin-bottom: 0; flex: 1; }
+  .send-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; border-radius: 10px;
+    color: white; padding: 12px 16px;
+    cursor: pointer; font-size: 1.1rem;
+    flex-shrink: 0; transition: opacity 0.2s;
+  }
+  .send-btn:hover { opacity: 0.85; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Dream Spark <span>X</span></div>
+  <div class="badge">AI Studio</div>
+</header>
+
+<div class="tabs" id="tabs">
+  <button class="tab active" onclick="switchTab('script', this)">
+    <span class="tab-icon">✍️</span> Script
+  </button>
+  <button class="tab" onclick="switchTab('voice', this)">
+    <span class="tab-icon">🎙️</span> Voice
+  </button>
+  <button class="tab" onclick="switchTab('chat', this)">
+    <span class="tab-icon">💬</span> Chat
+  </button>
+  <button class="tab" onclick="switchTab('settings', this)">
+    <span class="tab-icon">⚙️</span> Settings
+  </button>
+</div>
+
+<main>
+
+  <!-- SCRIPT TAB -->
+  <div class="panel active" id="panel-script">
+    <div class="section-title">✍️ Script Generator</div>
+    <div class="section-sub">Gemini AI দিয়ে YouTube স্ক্রিপ্ট তৈরি করো</div>
+
+    <label>ভিডিওর টপিক</label>
+    <textarea id="script-topic" placeholder="যেমন: বাংলাদেশের সেরা ৫টি পর্যটন স্থান..." oninput="updateCount(this, 'script-count')"></textarea>
+    <div class="char-count" id="script-count">0 অক্ষর</div>
+
+    <label>ভিডিওর ধরন</label>
+    <div class="chips" id="video-type-chips">
+      <div class="chip selected" onclick="selectChip(this, 'video-type-chips')">ইনফরমেটিভ</div>
+      <div class="chip" onclick="selectChip(this, 'video-type-chips')">ভ্লগ</div>
+      <div class="chip" onclick="selectChip(this, 'video-type-chips')">টিউটোরিয়াল</div>
+      <div class="chip" onclick="selectChip(this, 'video-type-chips')">রিভিউ</div>
+      <div class="chip" onclick="selectChip(this, 'video-type-chips')">স্টোরি</div>
+    </div>
+
+    <label>ভাষা</label>
+    <div class="chips" id="lang-chips">
+      <div class="chip selected" onclick="selectChip(this, 'lang-chips')">বাংলা</div>
+      <div class="chip" onclick="selectChip(this, 'lang-chips')">English</div>
+      <div class="chip" onclick="selectChip(this, 'lang-chips')">Hinglish</div>
+    </div>
+
+    <label>ভিডিওর দৈর্ঘ্য</label>
+    <div class="chips" id="duration-chips">
+      <div class="chip" onclick="selectChip(this, 'duration-chips')">Shorts (60s)</div>
+      <div class="chip selected" onclick="selectChip(this, 'duration-chips')">৫-৭ মিনিট</div>
+      <div class="chip" onclick="selectChip(this, 'duration-chips')">১০+ মিনিট</div>
+    </div>
+
+    <button class="btn btn-primary" onclick="generateScript()" id="script-btn">
+      ✨ স্ক্রিপ্ট তৈরি করো
+    </button>
+
+    <div id="script-loading" style="display:none">
+      <div class="loading"><div class="spinner"></div> Gemini AI ভাবছে...</div>
+    </div>
+
+    <div class="output-box" id="script-output">
+      <div class="output-header">
+        <span class="output-label">📝 Generated Script</span>
+        <button class="copy-btn" onclick="copyText('script-output-text')">Copy</button>
+      </div>
+      <div id="script-output-text"></div>
+    </div>
+
+    <div id="use-for-voice" style="display:none; margin-top:12px;">
+      <button class="btn btn-purple btn-sm" onclick="useScriptForVoice()">
+        🎙️ এই স্ক্রিপ্ট Voice-এ পাঠাও
+      </button>
+    </div>
+  </div>
+
+  <!-- VOICE TAB -->
+  <div class="panel" id="panel-voice">
+    <div class="section-title">🎙️ Voice Generator</div>
+    <div class="section-sub">ElevenLabs দিয়ে AI ভয়েসওভার তৈরি করো</div>
+
+    <label>টেক্সট লেখো</label>
+    <textarea id="voice-text" placeholder="এখানে ভয়েস করার টেক্সট লেখো..." oninput="updateCount(this, 'voice-count')"></textarea>
+    <div class="char-count" id="voice-count">0 অক্ষর</div>
+
+    <label>Voice ID</label>
+    <input type="text" id="voice-id" placeholder="ElevenLabs Voice ID (Settings থেকে সেট করো)" value="">
+
+    <label>স্টাইল</label>
+    <div class="chips" id="voice-style-chips">
+      <div class="chip selected" onclick="selectChip(this, 'voice-style-chips')">Normal</div>
+      <div class="chip" onclick="selectChip(this, 'voice-style-chips')">Newscast</div>
+      <div class="chip" onclick="selectChip(this, 'voice-style-chips')">Conversational</div>
+      <div class="chip" onclick="selectChip(this, 'voice-style-chips')">Excited</div>
+    </div>
+
+    <button class="btn btn-purple" onclick="generateVoice()" id="voice-btn">
+      🎙️ ভয়েস তৈরি করো
+    </button>
+
+    <div id="voice-loading" style="display:none">
+      <div class="loading"><div class="spinner"></div> ElevenLabs প্রসেস করছে...</div>
+    </div>
+
+    <div class="audio-wrap" id="audio-wrap">
+      <div class="output-header" style="margin-bottom:8px;">
+        <span class="output-label">🔊 Generated Audio</span>
+        <a id="audio-download" download="voice.mp3" style="text-decoration:none;">
+          <button class="copy-btn">⬇️ Download</button>
+        </a>
+      </div>
+      <audio id="audio-player" controls></audio>
+    </div>
+  </div>
+
+  <!-- CHAT TAB -->
+  <div class="panel" id="panel-chat">
+    <div class="section-title">💬 AI Chat Assistant</div>
+    <div class="section-sub">YouTube কন্টেন্ট আইডিয়া, টাইটেল, ট্যাগ সব পাও</div>
+
+    <div class="chat-messages" id="chat-messages">
+      <div class="msg msg-ai">
+        👋 হ্যালো! আমি তোমার YouTube কন্টেন্ট assistant। ভিডিও আইডিয়া, স্ক্রিপ্ট, টাইটেল, ট্যাগ — যেকোনো কিছু জিজ্ঞেস করো!
+      </div>
+    </div>
+
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="কিছু জিজ্ঞেস করো..." onkeydown="if(event.key==='Enter') sendChat()">
+      <button class="send-btn" onclick="sendChat()">➤</button>
+    </div>
+
+    <hr class="divider">
+    <label>Quick Prompts</label>
+    <div class="chips">
+      <div class="chip" onclick="quickChat('আমার চ্যানেলের জন্য ১০টি ভিডিও আইডিয়া দাও')">💡 ভিডিও আইডিয়া</div>
+      <div class="chip" onclick="quickChat('একটি catchy YouTube টাইটেল লেখো')">📌 টাইটেল</div>
+      <div class="chip" onclick="quickChat('YouTube SEO ট্যাগ দাও')">🏷️ ট্যাগ</div>
+      <div class="chip" onclick="quickChat('একটি ভালো thumbnail ধারণা দাও')">🖼️ Thumbnail</div>
+    </div>
+  </div>
+
+  <!-- SETTINGS TAB -->
+  <div class="panel" id="panel-settings">
+    <div class="section-title">⚙️ Settings</div>
+    <div class="section-sub">API Keys সংরক্ষণ করো</div>
+
+    <div class="settings-card">
+      <div class="settings-card-title">
+        <span style="color:#4285f4">G</span> Gemini API Key
+        <span class="status-dot" id="gemini-status"></span>
+      </div>
+      <label>API Key</label>
+      <div class="api-row">
+        <input type="password" id="gemini-key" placeholder="AIza...">
+        <button class="eye-btn" onclick="toggleEye('gemini-key', this)">👁️</button>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="saveKey('gemini')">💾 সেভ করো</button>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-card-title">
+        🔊 ElevenLabs API Key
+        <span class="status-dot" id="eleven-status"></span>
+      </div>
+      <label>API Key</label>
+      <div class="api-row">
+        <input type="password" id="eleven-key" placeholder="sk_...">
+        <button class="eye-btn" onclick="toggleEye('eleven-key', this)">👁️</button>
+      </div>
+      <label>Default Voice ID</label>
+      <input type="text" id="default-voice-id" placeholder="Voice ID (ElevenLabs dashboard থেকে নাও)">
+      <button class="btn btn-purple btn-sm" onclick="saveKey('eleven')">💾 সেভ করো</button>
+    </div>
+
+    <div class="settings-card" style="border-color: rgba(255,107,53,0.2);">
+      <div class="settings-card-title">ℹ️ ElevenLabs Voice ID কোথায় পাবো?</div>
+      <p style="font-size:0.82rem; color:var(--muted); line-height:1.6;">
+        ১. elevenlabs.io তে যাও<br>
+        ২. Voices → My Voices<br>
+        ৩. যেকোনো voice এ ক্লিক করো<br>
+        ৪. ID কপি করো (এরকম: <code style="color:var(--accent)">21m00Tcm4TlvDq8ikWAM</code>)
+      </p>
+    </div>
+  </div>
+
+</main>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// =================== STATE ===================
+let geminiKey = localStorage.getItem('dsx_gemini') || '';
+let elevenKey = localStorage.getItem('dsx_eleven') || '';
+let defaultVoiceId = localStorage.getItem('dsx_voice_id') || '';
+let generatedScript = '';
+let chatHistory = [];
+
+// =================== INIT ===================
+window.onload = () => {
+  if(geminiKey) {
+    document.getElementById('gemini-key').value = geminiKey;
+    document.getElementById('gemini-status').classList.add('green');
+  }
+  if(elevenKey) {
+    document.getElementById('eleven-key').value = elevenKey;
+    document.getElementById('eleven-status').classList.add('green');
+  }
+  if(defaultVoiceId) {
+    document.getElementById('default-voice-id').value = defaultVoiceId;
+    document.getElementById('voice-id').value = defaultVoiceId;
+  }
+};
+
+// =================== TABS ===================
+function switchTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// =================== CHIPS ===================
+function selectChip(el, groupId) {
+  document.querySelectorAll('#' + groupId + ' .chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function getSelectedChip(groupId) {
+  const sel = document.querySelector('#' + groupId + ' .chip.selected');
+  return sel ? sel.textContent.trim() : '';
+}
+
+// =================== CHAR COUNT ===================
+function updateCount(el, countId) {
+  document.getElementById(countId).textContent = el.value.length + ' অক্ষর';
+}
+
+// =================== TOAST ===================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// =================== EYE TOGGLE ===================
+function toggleEye(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+// =================== SAVE KEYS ===================
+function saveKey(type) {
+  if(type === 'gemini') {
+    geminiKey = document.getElementById('gemini-key').value.trim();
+    localStorage.setItem('dsx_gemini', geminiKey);
+    document.getElementById('gemini-status').classList.toggle('green', !!geminiKey);
+    showToast('✅ Gemini Key সেভ হয়েছে!');
+  } else {
+    elevenKey = document.getElementById('eleven-key').value.trim();
+    defaultVoiceId = document.getElementById('default-voice-id').value.trim();
+    localStorage.setItem('dsx_eleven', elevenKey);
+    localStorage.setItem('dsx_voice_id', defaultVoiceId);
+    document.getElementById('eleven-status').classList.toggle('green', !!elevenKey);
+    if(defaultVoiceId) document.getElementById('voice-id').value = defaultVoiceId;
+    showToast('✅ ElevenLabs সেটিং সেভ হয়েছে!');
+  }
+}
+
+// =================== COPY ===================
+function copyText(id) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('📋 কপি হয়েছে!'));
+}
+
+// =================== SCRIPT GENERATOR ===================
+async function generateScript() {
+  const topic = document.getElementById('script-topic').value.trim();
+  if(!topic) { showToast('⚠️ টপিক লেখো!'); return; }
+  if(!geminiKey) { showToast('⚠️ Settings এ Gemini Key সেভ করো!'); return; }
+
+  const videoType = getSelectedChip('video-type-chips');
+  const lang = getSelectedChip('lang-chips');
+  const duration = getSelectedChip('duration-chips');
+
+  const btn = document.getElementById('script-btn');
+  btn.disabled = true;
+  document.getElementById('script-loading').style.display = 'block';
+  document.getElementById('script-output').classList.remove('visible');
+  document.getElementById('use-for-voice').style.display = 'none';
+
+  const prompt = `তুমি একজন প্রফেশনাল YouTube স্ক্রিপ্ট রাইটার।
+
+নিচের তথ্য অনুযায়ী একটি সম্পূর্ণ YouTube ভিডিও স্ক্রিপ্ট লেখো:
+
+টপিক: ${topic}
+ভিডিওর ধরন: ${videoType}
+ভাষা: ${lang}
+দৈর্ঘ্য: ${duration}
+
+স্ক্রিপ্টে অবশ্যই থাকবে:
+- আকর্ষণীয় Hook (প্রথম ১৫ সেকেন্ড)
+- Introduction
+- মূল বিষয়বস্তু (পয়েন্ট আকারে)
+- Call to Action (Like, Subscribe, Comment)
+- Outro
+
+স্ক্রিপ্টটি ভয়েস ওভারের জন্য উপযুক্ত করে লেখো।`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+    });
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+    generatedScript = data.candidates[0].content.parts[0].text;
+    document.getElementById('script-output-text').textContent = generatedScript;
+    document.getElementById('script-output').classList.add('visible');
+    document.getElementById('use-for-voice').style.display = 'block';
+    showToast('✅ স্ক্রিপ্ট তৈরি হয়েছে!');
+  } catch(e) {
+    showToast('❌ Error: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    document.getElementById('script-loading').style.display = 'none';
+  }
+}
+
+function useScriptForVoice() {
+  document.getElementById('voice-text').value = generatedScript;
+  updateCount(document.getElementById('voice-text'), 'voice-count');
+  switchTab('voice', document.querySelectorAll('.tab')[1]);
+  showToast('✅ স্ক্রিপ্ট Voice ট্যাবে পাঠানো হয়েছে!');
+}
+
+// =================== VOICE GENERATOR ===================
+async function generateVoice() {
+  const text = document.getElementById('voice-text').value.trim();
+  const voiceId = document.getElementById('voice-id').value.trim() || defaultVoiceId;
+
+  if(!text) { showToast('⚠️ টেক্সট লেখো!'); return; }
+  if(!elevenKey) { showToast('⚠️ Settings এ ElevenLabs Key সেভ করো!'); return; }
+  if(!voiceId) { showToast('⚠️ Voice ID দাও!'); return; }
+
+  const btn = document.getElementById('voice-btn');
+  btn.disabled = true;
+  document.getElementById('voice-loading').style.display = 'block';
+  document.getElementById('audio-wrap').classList.remove('visible');
+
+  try {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'xi-api-key': elevenKey
+      },
+      body: JSON.stringify({
+        text: text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+      })
+    });
+
+    if(!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail?.message || 'ElevenLabs Error');
+    }
+
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    document.getElementById('audio-player').src = url;
+    document.getElementById('audio-download').href = url;
+    document.getElementById('audio-wrap').classList.add('visible');
+    showToast('✅ ভয়েস তৈরি হয়েছে!');
+  } catch(e) {
+    showToast('❌ Error: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    document.getElementById('voice-loading').style.display = 'none';
+  }
+}
+
+// =================== CHAT ===================
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  if(!geminiKey) { showToast('⚠️ Settings এ Gemini Key সেভ করো!'); return; }
+
+  input.value = '';
+  addChatMsg(msg, 'user');
+  chatHistory.push({ role: 'user', parts: [{ text: msg }] });
+
+  const typingEl = addChatMsg('...', 'ai');
+
+  try {
+    const systemPrompt = 'তুমি একজন YouTube content expert। বাংলায় উত্তর দাও। সংক্ষিপ্ত, কার্যকর পরামর্শ দাও।';
+    const messages = [
+      { role: 'user', parts: [{ text: systemPrompt }] },
+      { role: 'model', parts: [{ text: 'বুঝেছি! আমি তোমার YouTube চ্যানেলের জন্য সাহায্য করতে এখানে আছি।' }] },
+      ...chatHistory
+    ];
+
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: messages })
+    });
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message);
+    const reply = data.candidates[0].content.parts[0].text;
+    typingEl.textContent = reply;
+    chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+  } catch(e) {
+    typingEl.textContent = '❌ Error: ' + e.message;
+  }
+
+  const chatEl = document.getElementById('chat-messages');
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+function addChatMsg(text, type) {
+  const chatEl = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg msg-' + type;
+  div.textContent = text;
+  chatEl.appendChild(div);
+  chatEl.scrollTop = chatEl.scrollHeight;
+  return div;
+}
+
+function quickChat(prompt) {
+  document.getElementById('chat-input').value = prompt;
+  sendChat();
+}
+</script>
+
+</body>
+</html>
