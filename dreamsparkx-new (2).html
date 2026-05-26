@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream Spark X</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;color:#f0f0f8;font-family:'DM Sans',sans-serif;min-height:100vh}
+header{background:rgba(10,10,15,0.95);border-bottom:1px solid #2a2a3a;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;background:linear-gradient(135deg,#ff6b35,#a855f7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.badge{background:linear-gradient(135deg,#ff6b35,#a855f7);color:white;padding:3px 10px;border-radius:20px;font-size:0.7rem;font-weight:700}
+.tabs{display:flex;gap:4px;padding:16px 16px 0;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:10px 16px;border-radius:12px 12px 0 0;border:1px solid #2a2a3a;border-bottom:none;background:#111118;color:#6b6b8a;cursor:pointer;font-size:0.82rem;font-weight:500;font-family:'DM Sans',sans-serif}
+.tab.active{background:#16161f;color:#f0f0f8}
+.panel{display:none;background:#16161f;border:1px solid #2a2a3a;border-top:none;border-radius:0 16px 16px 16px;padding:20px;margin:0 16px;animation:fadeIn 0.3s}
+.panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:4px}
+.sub{font-size:0.78rem;color:#6b6b8a;margin-bottom:20px}
+label{display:block;font-size:0.75rem;font-weight:600;color:#6b6b8a;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+input,textarea,select{width:100%;background:#0a0a0f;border:1px solid #2a2a3a;border-radius:10px;color:#f0f0f8;font-family:'DM Sans',sans-serif;font-size:0.9rem;padding:12px 14px;outline:none;margin-bottom:14px;transition:border-color 0.2s}
+input:focus,textarea:focus{border-color:#a855f7}
+textarea{resize:vertical;min-height:100px}
+.btn{width:100%;padding:14px;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px}
+.btn-orange{background:linear-gradient(135deg,#ff6b35,#e05520);color:white;box-shadow:0 4px 20px rgba(255,107,53,0.3)}
+.btn-purple{background:linear-gradient(135deg,#a855f7,#7c3aed);color:white;box-shadow:0 4px 20px rgba(168,85,247,0.3)}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.chip{padding:6px 14px;border-radius:20px;border:1px solid #2a2a3a;background:#0a0a0f;font-size:0.78rem;color:#6b6b8a;cursor:pointer;transition:all 0.15s}
+.chip.active{border-color:#a855f7;color:#a855f7;background:rgba(168,85,247,0.1)}
+.output{background:#0a0a0f;border:1px solid #2a2a3a;border-radius:12px;padding:16px;margin-top:14px;font-size:0.88rem;line-height:1.7;display:none;white-space:pre-wrap}
+.output.show{display:block}
+.out-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.out-label{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#ff6b35}
+.copy-btn{background:none;border:1px solid #2a2a3a;border-radius:6px;color:#6b6b8a;padding:4px 10px;font-size:0.72rem;cursor:pointer}
+.loading{display:none;align-items:center;gap:10px;padding:14px;color:#6b6b8a;font-size:0.85rem}
+.loading.show{display:flex}
+.spin{width:18px;height:18px;border:2px solid #2a2a3a;border-top-color:#ff6b35;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.audio-wrap{display:none;margin-top:14px}
+.audio-wrap.show{display:block}
+audio{width:100%;border-radius:10px}
+.chat-box{max-height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+.msg{padding:10px 14px;border-radius:12px;font-size:0.88rem;line-height:1.6;max-width:90%}
+.msg-ai{background:#0a0a0f;border:1px solid #2a2a3a;align-self:flex-start}
+.msg-user{background:rgba(168,85,247,0.15);border:1px solid rgba(168,85,247,0.3);align-self:flex-end}
+.chat-row{display:flex;gap:8px}
+.chat-row input{margin-bottom:0;flex:1}
+.send{background:linear-gradient(135deg,#ff6b35,#a855f7);border:none;border-radius:10px;color:white;padding:12px 16px;cursor:pointer;font-size:1.1rem;flex-shrink:0}
+.settings-card{background:#0a0a0f;border:1px solid #2a2a3a;border-radius:12px;padding:16px;margin-bottom:14px}
+.settings-title{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.dot{width:8px;height:8px;border-radius:50%;background:#2a2a3a;display:inline-block}
+.dot.green{background:#22c55e;box-shadow:0 0 6px rgba(34,197,94,0.5)}
+.key-row{display:flex;gap:8px}
+.key-row input{margin-bottom:0;flex:1}
+.eye{background:#0a0a0f;border:1px solid #2a2a3a;border-radius:10px;color:#6b6b8a;padding:12px;cursor:pointer}
+.btn-sm{width:auto;padding:8px 16px;font-size:0.82rem;border-radius:8px;margin-top:10px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:#22c55e;color:white;padding:10px 20px;border-radius:20px;font-size:0.85rem;font-weight:500;z-index:1000;transition:transform 0.3s;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.hr{border:none;border-top:1px solid #2a2a3a;margin:16px 0}
+.use-voice-btn{display:none}
+.use-voice-btn.show{display:block}
+main{padding-bottom:30px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Dream Spark X</div>
+  <div class="badge">AI STUDIO</div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('script',this)">✍️ Script</button>
+  <button class="tab" onclick="switchTab('voice',this)">🎙️ Voice</button>
+  <button class="tab" onclick="switchTab('chat',this)">💬 Chat</button>
+  <button class="tab" onclick="switchTab('settings',this)">⚙️ Settings</button>
+</div>
+
+<main>
+<!-- SCRIPT -->
+<div class="panel active" id="panel-script">
+  <div class="title">✍️ Script Generator</div>
+  <div class="sub">AI দিয়ে YouTube স্ক্রিপ্ট তৈরি করো</div>
+  <label>ভিডিওর টপিক</label>
+  <textarea id="topic" placeholder="যেমন: বাংলাদেশের সেরা ৫টি জায়গা..."></textarea>
+  <label>ভিডিওর ধরন</label>
+  <div class="chips">
+    <div class="chip active" onclick="pick(this,'type')">ইনফরমেটিভ</div>
+    <div class="chip" onclick="pick(this,'type')">স্টোরি</div>
+    <div class="chip" onclick="pick(this,'type')">টিউটোরিয়াল</div>
+    <div class="chip" onclick="pick(this,'type')">রিভিউ</div>
+  </div>
+  <label>ভাষা</label>
+  <div class="chips">
+    <div class="chip active" onclick="pick(this,'lang')">বাংলা</div>
+    <div class="chip" onclick="pick(this,'lang')">English</div>
+  </div>
+  <label>দৈর্ঘ্য</label>
+  <div class="chips">
+    <div class="chip" onclick="pick(this,'dur')">Shorts</div>
+    <div class="chip active" onclick="pick(this,'dur')">৫-৭ মিনিট</div>
+    <div class="chip" onclick="pick(this,'dur')">১০+ মিনিট</div>
+  </div>
+  <button class="btn btn-orange" onclick="genScript()" id="script-btn">✨ স্ক্রিপ্ট তৈরি করো</button>
+  <div class="loading" id="script-load"><div class="spin"></div> AI ভাবছে...</div>
+  <div class="output" id="script-out">
+    <div class="out-header">
+      <span class="out-label">📝 Script</span>
+      <button class="copy-btn" onclick="copyIt('script-text')">Copy</button>
+    </div>
+    <div id="script-text"></div>
+  </div>
+  <button class="btn btn-purple btn-sm use-voice-btn" id="use-voice-btn" onclick="sendToVoice()">🎙️ Voice এ পাঠাও</button>
+</div>
+
+<!-- VOICE -->
+<div class="panel" id="panel-voice">
+  <div class="title">🎙️ Voice Generator</div>
+  <div class="sub">ElevenLabs দিয়ে AI ভয়েস তৈরি করো</div>
+  <label>টেক্সট</label>
+  <textarea id="voice-text" placeholder="এখানে ভয়েস করার টেক্সট লেখো..."></textarea>
+  <button class="btn btn-purple" onclick="genVoice()" id="voice-btn">🎙️ ভয়েস তৈরি করো</button>
+  <div class="loading" id="voice-load"><div class="spin"></div> ElevenLabs প্রসেস করছে...</div>
+  <div class="audio-wrap" id="audio-wrap">
+    <div class="out-header">
+      <span class="out-label">🔊 Audio</span>
+      <a id="dl-link" download="voice.mp3"><button class="copy-btn">⬇️ Download</button></a>
+    </div>
+    <audio id="player" controls></audio>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div class="panel" id="panel-chat">
+  <div class="title">💬 AI Chat</div>
+  <div class="sub">YouTube আইডিয়া, টাইটেল, ট্যাগ পাও</div>
+  <div class="chat-box" id="chat-box">
+    <div class="msg msg-ai">👋 হ্যালো! আমি তোমার YouTube assistant। যেকোনো কিছু জিজ্ঞেস করো!</div>
+  </div>
+  <div class="chat-row">
+    <input type="text" id="chat-in" placeholder="কিছু জিজ্ঞেস করো..." onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="send" onclick="sendChat()">➤</button>
+  </div>
+  <div class="hr"></div>
+  <label>Quick Prompts</label>
+  <div class="chips">
+    <div class="chip" onclick="quickChat('আমার চ্যানেলের জন্য ১০টি ভিডিও আইডিয়া দাও')">💡 আইডিয়া</div>
+    <div class="chip" onclick="quickChat('একটি catchy YouTube টাইটেল লেখো')">📌 টাইটেল</div>
+    <div class="chip" onclick="quickChat('YouTube SEO ট্যাগ দাও')">🏷️ ট্যাগ</div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="panel" id="panel-settings">
+  <div class="title">⚙️ Settings</div>
+  <div class="sub">API Keys সেট করো</div>
+
+  <div class="settings-card">
+    <div class="settings-title">🤖 OpenRouter API Key <span class="dot" id="or-dot"></span></div>
+    <label>Key (openrouter.ai থেকে নাও)</label>
+    <div class="key-row">
+      <input type="password" id="or-key" placeholder="sk-or-v1-...">
+      <button class="eye" onclick="toggleEye('or-key')">👁️</button>
+    </div>
+    <button class="btn btn-orange btn-sm" onclick="saveOR()">💾 সেভ করো</button>
+  </div>
+
+  <div class="settings-card">
+    <div class="settings-title">🔊 ElevenLabs API Key <span class="dot" id="el-dot"></span></div>
+    <label>API Key</label>
+    <div class="key-row">
+      <input type="password" id="el-key" placeholder="sk_...">
+      <button class="eye" onclick="toggleEye('el-key')">👁️</button>
+    </div>
+    <label>Voice ID</label>
+    <input type="text" id="el-voice" placeholder="CYw3kZ48B47LlnXFnvUM">
+    <button class="btn btn-purple btn-sm" onclick="saveEL()">💾 সেভ করো</button>
+  </div>
+
+  <div class="settings-card" style="border-color:rgba(255,107,53,0.2)">
+    <div class="settings-title">ℹ️ OpenRouter Key কোথায় পাবো?</div>
+    <p style="font-size:0.82rem;color:#6b6b8a;line-height:1.6">
+      ১. openrouter.ai তে যাও<br>
+      ২. Sign in করো<br>
+      ৩. Keys → Create Key<br>
+      ৪. Key কপি করো (sk-or-v1-...)
+    </p>
+  </div>
+</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// STATE
+let orKey = '', elKey = '', voiceId = '', script = '', history = [];
+
+// INIT
+window.onload = () => {
+  orKey = localStorage.getItem('or_key') || '';
+  elKey = localStorage.getItem('el_key') || '';
+  voiceId = localStorage.getItem('el_voice') || 'CYw3kZ48B47LlnXFnvUM';
+  if(orKey){ document.getElementById('or-key').value=orKey; document.getElementById('or-dot').className='dot green'; }
+  if(elKey){ document.getElementById('el-key').value=elKey; document.getElementById('el-dot').className='dot green'; }
+  if(voiceId) document.getElementById('el-voice').value=voiceId;
+};
+
+// TABS
+function switchTab(name, btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// CHIPS
+function pick(el, group){
+  document.querySelectorAll('.chip[onclick*="'+group+'"]').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+function getChip(group){
+  const el = document.querySelector('.chip.active[onclick*="'+group+'"]');
+  return el ? el.textContent.trim() : '';
+}
+
+// TOAST
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+
+// COPY
+function copyIt(id){ navigator.clipboard.writeText(document.getElementById(id).textContent); toast('📋 কপি হয়েছে!'); }
+
+// EYE
+function toggleEye(id){ const i=document.getElementById(id); i.type=i.type==='password'?'text':'password'; }
+
+// SAVE KEYS
+function saveOR(){
+  orKey = document.getElementById('or-key').value.trim();
+  localStorage.setItem('or_key', orKey);
+  document.getElementById('or-dot').className = orKey ? 'dot green' : 'dot';
+  toast('✅ OpenRouter Key সেভ!');
+}
+function saveEL(){
+  elKey = document.getElementById('el-key').value.trim();
+  voiceId = document.getElementById('el-voice').value.trim() || 'CYw3kZ48B47LlnXFnvUM';
+  localStorage.setItem('el_key', elKey);
+  localStorage.setItem('el_voice', voiceId);
+  document.getElementById('el-dot').className = elKey ? 'dot green' : 'dot';
+  toast('✅ ElevenLabs সেটিং সেভ!');
+}
+
+// SCRIPT GENERATOR
+async function genScript(){
+  const topic = document.getElementById('topic').value.trim();
+  if(!topic){ toast('⚠️ টপিক লেখো!'); return; }
+  if(!orKey){ toast('⚠️ Settings এ OpenRouter Key দাও!'); return; }
+
+  const type = document.querySelector('.chip.active[onclick*="type"]')?.textContent.trim() || 'ইনফরমেটিভ';
+  const lang = document.querySelector('.chip.active[onclick*="lang"]')?.textContent.trim() || 'বাংলা';
+  const dur = document.querySelector('.chip.active[onclick*="dur"]')?.textContent.trim() || '৫-৭ মিনিট';
+
+  const btn = document.getElementById('script-btn');
+  btn.disabled = true;
+  document.getElementById('script-load').classList.add('show');
+  document.getElementById('script-out').classList.remove('show');
+  document.getElementById('use-voice-btn').classList.remove('show');
+
+  const prompt = `তুমি একজন প্রফেশনাল YouTube স্ক্রিপ্ট রাইটার।
+
+টপিক: ${topic}
+ধরন: ${type}
+ভাষা: ${lang}
+দৈর্ঘ্য: ${dur}
+
+একটি সম্পূর্ণ YouTube স্ক্রিপ্ট লেখো যেখানে থাকবে:
+- আকর্ষণীয় Hook
+- Introduction  
+- মূল বিষয়বস্তু
+- Call to Action
+- Outro
+
+ভয়েসওভারের জন্য উপযুক্ত করে লেখো।`;
+
+  try {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${orKey}`,
+        'HTTP-Referer': 'https://dreamsparkx.app'
+      },
+      body: JSON.stringify({
+        model: 'google/gemma-3-4b-it:free',
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    script = data.choices[0].message.content;
+    document.getElementById('script-text').textContent = script;
+    document.getElementById('script-out').classList.add('show');
+    document.getElementById('use-voice-btn').classList.add('show');
+    toast('✅ স্ক্রিপ্ট তৈরি হয়েছে!');
+  } catch(e) {
+    toast('❌ ' + e.message);
+  } finally {
+    btn.disabled = false;
+    document.getElementById('script-load').classList.remove('show');
+  }
+}
+
+function sendToVoice(){
+  document.getElementById('voice-text').value = script;
+  switchTab('voice', document.querySelectorAll('.tab')[1]);
+  toast('✅ Voice ট্যাবে পাঠানো হয়েছে!');
+}
+
+// VOICE GENERATOR
+async function genVoice(){
+  const text = document.getElementById('voice-text').value.trim();
+  if(!text){ toast('⚠️ টেক্সট লেখো!'); return; }
+  if(!elKey){ toast('⚠️ Settings এ ElevenLabs Key দাও!'); return; }
+
+  const btn = document.getElementById('voice-btn');
+  btn.disabled = true;
+  document.getElementById('voice-load').classList.add('show');
+  document.getElementById('audio-wrap').classList.remove('show');
+
+  try {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'xi-api-key': elKey },
+      body: JSON.stringify({
+        text: text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+      })
+    });
+    if(!res.ok){ const e=await res.json(); throw new Error(e.detail?.message||'ElevenLabs Error'); }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    document.getElementById('player').src = url;
+    document.getElementById('dl-link').href = url;
+    document.getElementById('audio-wrap').classList.add('show');
+    toast('✅ ভয়েস তৈরি হয়েছে!');
+  } catch(e) {
+    toast('❌ ' + e.message);
+  } finally {
+    btn.disabled = false;
+    document.getElementById('voice-load').classList.remove('show');
+  }
+}
+
+// CHAT
+async function sendChat(){
+  const inp = document.getElementById('chat-in');
+  const msg = inp.value.trim();
+  if(!msg) return;
+  if(!orKey){ toast('⚠️ Settings এ OpenRouter Key দাও!'); return; }
+
+  inp.value = '';
+  addMsg(msg, 'user');
+  history.push({ role: 'user', content: msg });
+
+  const typing = addMsg('...', 'ai');
+
+  try {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${orKey}`,
+        'HTTP-Referer': 'https://dreamsparkx.app'
+      },
+      body: JSON.stringify({
+        model: 'google/gemma-3-4b-it:free',
+        messages: [
+          { role: 'system', content: 'তুমি একজন YouTube content expert। বাংলায় উত্তর দাও। সংক্ষিপ্ত এবং কার্যকর পরামর্শ দাও।' },
+          ...history
+        ]
+      })
+    });
+    const data = await res.json();
+    if(data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    const reply = data.choices[0].message.content;
+    typing.textContent = reply;
+    history.push({ role: 'assistant', content: reply });
+  } catch(e) {
+    typing.textContent = '❌ ' + e.message;
+  }
+  const box = document.getElementById('chat-box');
+  box.scrollTop = box.scrollHeight;
+}
+
+function addMsg(text, type){
+  const box = document.getElementById('chat-box');
+  const div = document.createElement('div');
+  div.className = 'msg msg-' + type;
+  div.textContent = text;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  return div;
+}
+
+function quickChat(p){ document.getElementById('chat-in').value=p; sendChat(); }
+</script>
+</body>
+</html>
